@@ -19,16 +19,18 @@ delete_admin_router = Router()
 async def delete_admin_cmd(message: Message, state: FSMContext) -> None:
     """
     Хендлер отлавливет команду удаления администратора
-
+    middleware гарантирует выполнение команды вызваной только администратором бота
     :param message: объект сообщения
     :param state: объект состояния
     :return: None
     """
-    if Database.is_admin(user_id=message.from_user.id, conn=db_conn):
-        await message.reply(text=INSTRUCTION_DEL)
-        await state.set_state(BotStates.wait_id_to_delete_admin)
-    else:
-        await message.reply(text=NOT_ADMIN_DEL)
+    await message.reply(text=INSTRUCTION_DEL)
+    await state.set_state(BotStates.wait_id_to_delete_admin)
+    # if Database.is_admin(user_id=message.from_user.id, conn=db_conn):
+    #     await message.reply(text=INSTRUCTION_DEL)
+    #     await state.set_state(BotStates.wait_id_to_delete_admin)
+    # else:
+    #     await message.reply(text=NOT_ADMIN_DEL)
 
 
 @delete_admin_router.message(Command("cancel"), StateFilter(BotStates.wait_id_to_delete_admin))

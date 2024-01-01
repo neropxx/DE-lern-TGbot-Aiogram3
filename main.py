@@ -6,6 +6,7 @@ from bot_set.my_bot import my_bot
 from bot_set.my_dispatcher import dp
 from database.db_class import Database
 from bot_set.db_connection import db_conn
+from bot_set.middleware import AdminCheckMiddleware
 
 from main_functions_handlers.start import start_router
 from main_functions_handlers.start import start_cmd
@@ -39,6 +40,10 @@ def on_startup(bot: Bot):
 
 async def main() -> None:
     dp.startup.register(on_startup)
+    add_admin_router.message.outer_middleware.register(AdminCheckMiddleware())
+    delete_admin_router.message.outer_middleware.register(AdminCheckMiddleware())
+    ads_send_router.message.outer_middleware.register(AdminCheckMiddleware())
+
     dp.include_routers(start_router, verb_mode_router, noun_mode_router, prasens_router, prateritum_router,
                        add_admin_router, delete_admin_router, ads_send_router)
 

@@ -28,18 +28,22 @@ ads_send_router = Router()
 async def send_cmd(message: Message, state: FSMContext) -> None:
     """
     Хендлер команды отправки рекламного поста
-    пропускает выполнение сценария далее только если команду вызывает администратор бота
+    пропускает выполнение сценария далее только если команду вызывает администратор бота, иначе выполнение
+    прерывается middlware
     состояние меняется если пользователь администор: ожидает рекламный текст от пользователя
 
     :param message: объект сообщения
     :param state: объект состояния
     :return: None
     """
-    if Database.is_admin(user_id=int(message.from_user.id), conn=db_conn):
-        await state.set_state(BotStates.wait_text_to_send)
-        await message.reply(text=INSTRUCTION_SEND)
-    else:
-        await message.reply(text=NOT_ADMIN_SEND)
+    await state.set_state(BotStates.wait_text_to_send)
+    await message.reply(text=INSTRUCTION_SEND)
+
+    # if Database.is_admin(user_id=int(message.from_user.id), conn=db_conn):
+    #     await state.set_state(BotStates.wait_text_to_send)
+    #     await message.reply(text=INSTRUCTION_SEND)
+    # else:
+    #     await message.reply(text=NOT_ADMIN_SEND)
 
 
 @ads_send_router.message(F.text, ~F.text.startswith("/"), StateFilter(BotStates.wait_text_to_send))

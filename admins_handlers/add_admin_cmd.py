@@ -19,16 +19,19 @@ add_admin_router = Router()
 @add_admin_router.message(Command("add_admin"))
 async def add_admin_cmd(message: Message, state: FSMContext) -> None:
     """
-    Хендлер команды добавления администратора. Если команду вызвал НЕ администратор, команжда не будет выполнена.
+    Хендлер команды добавления администратора. Если команду вызвал НЕ администратор, команда будет прервана middleware
     :param message: объект сообщения
     :param state: объект состояния бота
     :return: None
     """
-    if Database.is_admin(user_id=message.from_user.id, conn=db_conn):
-        await message.reply(text=INSTRUCTION)
-        await state.set_state(BotStates.wait_id_to_add_admin)
-    else:
-        await message.reply(text=NOT_ADMIN)
+    await message.reply(text=INSTRUCTION)
+    await state.set_state(BotStates.wait_id_to_add_admin)
+
+    # if Database.is_admin(user_id=message.from_user.id, conn=db_conn):
+    #     await message.reply(text=INSTRUCTION)
+    #     await state.set_state(BotStates.wait_id_to_add_admin)
+    # # else:
+    # #     await message.reply(text=NOT_ADMIN)
 
 
 @add_admin_router.message(Command("cancel"), StateFilter(BotStates.wait_id_to_add_admin))
